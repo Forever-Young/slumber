@@ -119,6 +119,9 @@ class Resource(ResourceAttributesMixin, object):
         return resource_obj.get(params=kwargs)
 
     def _try_to_serialize_response(self, resp):
+        if not len(resp.content) and "location" in resp.headers:
+            return self._handle_redirect(resp)
+
         s = self._store["serializer"]
 
         if resp.headers.get("content-type", None):
